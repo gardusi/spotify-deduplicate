@@ -1,0 +1,12 @@
+{
+  "name": "spotify-deduplicate",
+  "version": "0.0.1",
+  "description": "Reads the user's songs and indicates duplicate candidates",
+  "repository": "git@github.com:gardusi/spotify-deduplicate.git",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Giovanni Gardusi",
+  "license": "ISC"
+}
