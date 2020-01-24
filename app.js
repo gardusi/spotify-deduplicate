@@ -52,10 +52,10 @@ app.get('/login', function(req, res) {
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
-      client_id: client_id,
-      scope: scope,
-      redirect_uri: redirect_uri,
-      state: state
+      client_id,
+      scope,
+      redirect_uri,
+      state
     }));
 });
 
