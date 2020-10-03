@@ -1,5 +1,5 @@
 # Spotify Duplicates Identifier
-Reads the user's songs and finds songs contained whithin different groups, such as different feelings or genres. This is a fairly simple client, which consist only of an Express server and a HTML page with embedded scripts for sorting and filtering playlists.
+Reads the user's songs and finds songs contained whithin different groups, such as different feelings or genres.
 
 ## How to Use
 
