@@ -152,8 +152,8 @@
           }, false);
 
           const EXPECTED_NUMBER_OF_PLAYLISTS = 100;
-          const FEELINGS = ["Triste", "Sereno", "Febroso", "Puto", "Alegre", "Animado", "Frito"];
-          const GENRES = ["Funk", "New Wave", "Reggae", "Synthwave", "Música Clássica", "Bossa Nova", "Country", "Latinas", "Pop", "Jazz", "Rap & Hip Hop"];
+          const FEELINGS = process.env.FEELINGS.split(",");
+          const GENRES = process.env.GENRES.split(",");
 
           var detectDuplicates = (songOccurrences) => {
             let duplicates = [];
