@@ -1,6 +1,6 @@
 const express = require('express'); // Express web server framework
 const runQuery = require('./query');
-const { filterByDuplicates } = require('./duplicates');
+const { filterByFeelings, filterByGenres, fuzzyFilter } = require('./filters');
 
 const router = express.Router();
 
@@ -32,35 +32,54 @@ const findSongs = async (accessToken, href, limit, offset) => {
     : response.items;
 };
 
-const songName = (song) => song.track.name + ' (' + song.track.id + ')';
+const songName = (song) => ({
+  name: song.track.name,
+  id: song.track.id,
+});
+
+const appendSongs = (playlist, songs) => ({
+  name: playlist.name,
+  songs: songs.map(songName),
+});
+
+const registerOccurrences = (songOccurrences, playlist) => {
+  playlist.songs.forEach((song) => {
+    if (songOccurrences[song.id] === undefined) {
+      songOccurrences[song.id] = {
+        name: song.name,
+        playlists: [playlist.name],
+      };
+
+      return;
+    }
+    songOccurrences[song.id].playlists = [...songOccurrences[song.id].playlists, playlist.name];
+  });
+
+  return songOccurrences;
+}
 
 router.get('/playlists', async (req, res) => {
-  const playlists = await findPlaylists(req.headers.access_token, 50, 0)
+  const playlistMetadata = await findPlaylists(req.headers.access_token, 50, 0)
     .catch((err) => {
-      res.statusCode(err.statusCode);
+      res.status(err.statusCode);
       res.send(err.message);
     });
 
-  const promises = playlists.map((playlist) =>
+  const playlistPromises = playlistMetadata.map((playlist) =>
     findSongs(req.headers.access_token, playlist.tracks.href, 100, 0)
       .catch((err) => {
-        res.statusCode(err.statusCode);
+        res.status(err.statusCode);
         res.send(err.message);
       })
-      .then((songs) => [playlist.name, songs.map(songName)]),
+      .then((songs) => appendSongs(playlist, songs)),
   );
 
-  const songs = await Promise.all(promises);
-
-  const songOccurrences = {};
-  songs.forEach(([playlist, songNames]) => {
-    for (const songName of songNames) {
-      songOccurrences[songName] = [...(songOccurrences[songName] || []), playlist];
-    }
-  });
+  const songOccurrences = (await Promise.all(playlistPromises))
+    .reduce(registerOccurrences, {});
 
   res.send({
-    duplicates: filterByDuplicates(songOccurrences),
+    feelingDuplicates: filterByFeelings(songOccurrences),
+    genreDuplicates: filterByGenres(songOccurrences),
     songOccurrences,
   });
 });

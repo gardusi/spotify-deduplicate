@@ -100,8 +100,6 @@
             musicListTemplate = Handlebars.compile(musicListSource),
             musicListPlaceholder = document.getElementById('music-list');
 
-        musicListPlaceholder.innerHTML = musicListTemplate({});
-
         var params = getHashParams();
 
         var access_token = params.access_token,
@@ -154,8 +152,11 @@
               url: '/playlists',
               headers: { access_token },
             }).then((res) => {
+              const genreDuplicates = res.genreDuplicates.map((duplicate) => duplicate.join(" | "));
+              const feelingDuplicates = res.feelingDuplicates.map((duplicate) => duplicate.join(" | "));
+
               musicListPlaceholder.innerHTML = musicListTemplate({
-                songs: res.duplicates.map((duplicate) => duplicate.join(" | ")),
+                songs: [...genreDuplicates, ...feelingDuplicates],
               });
             });
           }, false);
