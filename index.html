@@ -28,7 +28,7 @@
         <div id="oauth">
         </div>
         <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
-        <button class="btn btn-default" id="get-music-list">List all my music and its playlists</button>
+        <button class="btn btn-default" id="get-music-list">Search Song Duplicates</button>
         <div id="music-list">
         </div>
       </div>
@@ -63,7 +63,7 @@
     </script>
 
     <script id="music-list-template" type="text/x-handlebars-template">
-      <h3>Your Songs</h3>
+      <h3>Your Song Duplicates</h3>
       {{#each songs}}
         <p>{{this}}</p>
       {{/each}}
@@ -151,49 +151,78 @@
             });
           }, false);
 
-          var processPlaylistResults = (results) => {
-            let songOccurrences = {};
+          const EXPECTED_NUMBER_OF_PLAYLISTS = 100;
+          const FEELINGS = ["Triste", "Sereno", "Febroso", "Puto", "Alegre", "Animado", "Frito"];
+          const GENRES = ["Funk", "New Wave", "Reggae", "Synthwave", "Música Clássica", "Bossa Nova", "Country", "Latinas", "Pop", "Jazz", "Rap & Hip Hop"];
+
+          var detectDuplicates = (songOccurrences) => {
+            let duplicates = [];
+
+            Object.entries(songOccurrences).forEach(([name, playlists]) => {
+              const feelingsCount = playlists.reduce((count, name) => count + FEELINGS.includes(name), 0);
+
+              if (feelingsCount >= 2) {
+                duplicates.push([feelingsCount + " Feelings", name, playlists.join(", ")]);
+              }
+
+              const genresCount = playlists.reduce((count, name) => count + GENRES.includes(name), 0);
+
+              if (genresCount >= 2) {
+                duplicates.push([genresCount + " Genres", name, playlists.join(", ")]);
+              }
+            });
+
+            return duplicates;
+          }
+
+          var processSongResults = (results) => {
+            const songOccurrences = {};
 
             results.forEach((result) => {
-              const songs = result[1].map((item) => item.track.name + ' (' + item.track.id + ')');
+              const songs = result[1].map((song) => song.track.name + ' (' + song.track.id + ')');
               
               for (const song of songs) {
                 songOccurrences[song] = [...(songOccurrences[song] || []), result[0]];
               }
             });
 
+            const duplicates = detectDuplicates(songOccurrences);
+
             musicListPlaceholder.innerHTML = musicListTemplate({
-              songs: Object.entries(songOccurrences).map(([name, playlists]) => name + ' >> ' + playlists),
+              songs: duplicates.map((duplicate) => duplicate.join(" | ")),
             });
           }
 
-          document.getElementById('get-music-list').addEventListener('click', function() {
-            $.ajax({
-              url: 'https://api.spotify.com/v1/me/playlists?limit=50',
-              headers: {
-                'Authorization': 'Bearer ' + access_token
-              },
-              success: function(response) {
-                console.log(response);
+          var processPlaylistResults = (results) => {
+            const playlists = results.map((result) => result.items).flat();
 
-                return;
-                if (response && response.items) {
-                  let promises = [];
-                  for (const item of response.items) {
-                    for (let hit = 0; hit < Math.ceil(item.tracks.total / 100); hit++) {
-                      promises.push($.ajax({
-                        url: item.tracks.href + '?offset=' + hit * 100,
-                        headers: {
-                          'Authorization': 'Bearer ' + access_token
-                        },
-                      }).then((response) => [item.name, response.items]));
-                    }
-
-                    Promise.all(promises).then(processPlaylistResults);
-                  }
-                }
+            let promises = [];
+            for (const playlist of playlists) {
+              for (let hit = 0; hit < Math.ceil(playlist.tracks.total / 100); hit++) {
+                promises.push($.ajax({
+                  url: playlist.tracks.href + '?offset=' + hit * 100,
+                  headers: {
+                    'Authorization': 'Bearer ' + access_token
+                  },
+                }).then((result) => [playlist.name, result.items]));
               }
-            });
+            }
+
+            Promise.all(promises).then(processSongResults);
+          }
+
+          document.getElementById('get-music-list').addEventListener('click', function() {
+            let promises = [];
+            for (let hit = 0; hit < Math.ceil(EXPECTED_NUMBER_OF_PLAYLISTS / 50); hit++) {
+              promises.push($.ajax({
+                url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=' + hit * 50,
+                headers: {
+                  'Authorization': 'Bearer ' + access_token
+                },
+              }));
+            }
+
+            Promise.all(promises).then(processPlaylistResults);
           }, false);
         }
       })();
