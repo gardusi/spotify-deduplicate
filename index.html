@@ -28,6 +28,9 @@
         <div id="oauth">
         </div>
         <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
+        <button class="btn btn-default" id="get-music-list">List all my music and its playlists</button>
+        <div id="music-list">
+        </div>
       </div>
     </div>
 
@@ -59,6 +62,13 @@
       </dl>
     </script>
 
+    <script id="music-list-template" type="text/x-handlebars-template">
+      <h3>Your Songs</h3>
+      {{#each songs}}
+        <p>{{this}}</p>
+      {{/each}}
+    </script>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script>
@@ -85,6 +95,12 @@
         var oauthSource = document.getElementById('oauth-template').innerHTML,
             oauthTemplate = Handlebars.compile(oauthSource),
             oauthPlaceholder = document.getElementById('oauth');
+
+        var musicListSource = document.getElementById('music-list-template').innerHTML,
+            musicListTemplate = Handlebars.compile(musicListSource),
+            musicListPlaceholder = document.getElementById('music-list');
+
+        musicListPlaceholder.innerHTML = musicListTemplate({});
 
         var params = getHashParams();
 
@@ -132,6 +148,51 @@
                 access_token: access_token,
                 refresh_token: refresh_token
               });
+            });
+          }, false);
+
+          var processPlaylistResults = (results) => {
+            let songOccurrences = {};
+
+            results.forEach((result) => {
+              const songs = result[1].map((item) => item.track.name + ' (' + item.track.id + ')');
+              
+              for (const song of songs) {
+                songOccurrences[song] = [...(songOccurrences[song] || []), result[0]];
+              }
+            });
+
+            musicListPlaceholder.innerHTML = musicListTemplate({
+              songs: Object.entries(songOccurrences).map(([name, playlists]) => name + ' >> ' + playlists),
+            });
+          }
+
+          document.getElementById('get-music-list').addEventListener('click', function() {
+            $.ajax({
+              url: 'https://api.spotify.com/v1/me/playlists?limit=50',
+              headers: {
+                'Authorization': 'Bearer ' + access_token
+              },
+              success: function(response) {
+                console.log(response);
+
+                return;
+                if (response && response.items) {
+                  let promises = [];
+                  for (const item of response.items) {
+                    for (let hit = 0; hit < Math.ceil(item.tracks.total / 100); hit++) {
+                      promises.push($.ajax({
+                        url: item.tracks.href + '?offset=' + hit * 100,
+                        headers: {
+                          'Authorization': 'Bearer ' + access_token
+                        },
+                      }).then((response) => [item.name, response.items]));
+                    }
+
+                    Promise.all(promises).then(processPlaylistResults);
+                  }
+                }
+              }
             });
           }, false);
         }
