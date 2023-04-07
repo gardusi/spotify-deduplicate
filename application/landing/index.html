@@ -149,7 +149,7 @@
             });
           }, false);
 
-          document.getElementById('get-music-list').addEventListener('click', () => {
+          document.getElementById('get-music-list').addEventListener('click', function() {
             $.ajax({
               url: '/playlists',
               headers: { access_token },
