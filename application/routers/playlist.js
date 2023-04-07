@@ -1,48 +1,51 @@
 const express = require('express') // Express web server framework
-const { httpClient } = require('./clients/http')
-const { filterByDuplicates } = require('./duplicates')
+const { httpClient } = require('../clients/http')
+const { spotifyProfileClient } = require('../clients/spotify/profile')
+const { filterByDuplicates } = require('../duplicates')
 
 const router = express.Router()
 
-const findPlaylists = async (accessToken, limit, offset) => {
-  const options = {
-    url: 'https://api.spotify.com/v1/me/playlists?limit=' + limit + '&offset=' + offset,
-    headers: { 'Authorization': 'Bearer ' + accessToken },
-    json: true,
-  }
+const findPlaylists = async (session, limit, offset) => {
+  // const options = {
+  //   url: 'https://api.spotify.com/v1/me/playlists?limit=' + limit + '&offset=' + offset,
+  //   headers: { 'Authorization': 'Bearer ' + accessToken },
+  //   json: true,
+  // }
 
-  const response = await httpClient.get(options, "Failed to find playlists")
+  // const response = await httpClient.get(options, "Failed to find playlists")
+
+  const response = await spotifyProfileClient(session).findPlaylists({ limit, offset })
 
   return response.total > (offset + limit)
-    ? [...response.items, ...await findPlaylists(accessToken, limit, offset + limit)]
+    ? [...response.items, ...await findPlaylists(session, limit, offset + limit)]
     : response.items
 }
 
-const findSongs = async (accessToken, href, limit, offset) => {
+const findSongs = async (session, href, limit, offset) => {
   const options = {
     url: href + '?limit=' + limit + '&offset=' + offset,
-    headers: { 'Authorization': 'Bearer ' + accessToken },
+    headers: { 'Authorization': session.getBearerAuth() },
     json: true,
   }
 
   const response = await httpClient.get(options, "Failed to find tracks")
 
   return response.total > (offset + limit)
-    ? [...response.items, ...await findSongs(accessToken, href, limit, offset + limit)]
+    ? [...response.items, ...await findSongs(session, href, limit, offset + limit)]
     : response.items
 }
 
 const songName = (song) => song.track.name + ' (' + song.track.id + ')'
 
 router.get('/playlists', async (req, res) => {
-  const playlists = await findPlaylists(req.headers.access_token, 50, 0)
+  const playlists = await findPlaylists(req.session, 50, 0)
     .catch((err) => {
       res.statusCode(err.statusCode)
       res.send(err.message)
     })
 
   const promises = playlists.map((playlist) =>
-    findSongs(req.headers.access_token, playlist.tracks.href, 100, 0)
+    findSongs(req.session, playlist.tracks.href, 100, 0)
       .catch((err) => {
         res.statusCode(err.statusCode)
         res.send(err.message)
@@ -65,4 +68,4 @@ router.get('/playlists', async (req, res) => {
   })
 })
 
-module.exports = router
+module.exports = { playlistRouter: router }

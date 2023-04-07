@@ -3,10 +3,10 @@ const { callbackController } = require('../controllers/callback')
 const { loginController } = require('../controllers/login')
 const { refreshTokenController } = require('../controllers/refreshToken')
 
-const authRouter = express.Router()
+const router = express.Router()
 
-authRouter.get('/login', loginController)
-authRouter.get('/callback', callbackController)
-authRouter.get('/refresh_token', refreshTokenController)
+router.get('/login', loginController)
+router.get('/callback', callbackController)
+router.get('/refresh_token', refreshTokenController)
 
-module.exports = { authRouter }
+module.exports = { authRouter: router }

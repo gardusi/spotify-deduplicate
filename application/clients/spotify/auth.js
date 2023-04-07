@@ -1,12 +1,12 @@
 const { config } = require('../../config')
 const { httpClient } = require('../http')
 
-const spotifyAuthClient = () => {
+const spotifyAuthClient = (baseUrl = config.spotify.urls.auth) => {
 
   const buildOptions = (form) => ({
-    url: config.spotify.urls.auth + '/api/token',
+    url: `${baseUrl}/api/token`,
     headers: {
-      'Authorization': config.spotify.getAuthorization(),
+      'Authorization': config.spotify.getBasicAuth(),
     },
     json: true,
     form,
