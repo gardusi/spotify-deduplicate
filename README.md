@@ -3,13 +3,13 @@ Reads the user's songs and finds songs contained whithin different groups, such 
 
 ## How to Use
 
-1. Clone the project and run `npm i` on the root folder
+1. Clone the project and run `yarn` on the root folder
 
 2. Get your Spotify credentials at the [Register Your App](https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app) tutorial
 
 3. Rename .env.example to .env and replace the configurations with your credentials and target playlists (pay attention to spaces!)
 
-4. Get the server up by running `node app.js`
+4. Get the server up by running `yarn start`
 
 5. Access the server at `localhost:8888`. Spotify will guide you to log into the application
 
