@@ -1,20 +1,10 @@
-const { config } = require('../config')
-const { httpClient } = require('../clients/http')
+const { spotifyAuthClient } = require('../clients/spotify/auth')
 
 const refreshTokenController = async (req, res) => {
   // requesting access token from refresh token
-  const refresh_token = req.query.refresh_token
-  const options = {
-    url: config.spotify.urls.auth + '/api/token',
-    headers: { 'Authorization': config.spotify.getAuthorization() },
-    form: {
-      grant_type: 'refresh_token',
-      refresh_token: refresh_token
-    },
-    json: true
-  }
+  const refreshToken = req.query.refresh_token
+  const { access_token } = await spotifyAuthClient().refresh(refreshToken)
 
-  const { access_token } = await httpClient.post(options, 'Failed to refresh API access')
   res.send({ access_token })
 }
 

@@ -2,7 +2,7 @@ const request = require('request')
 const { config } = require('../config')
 const { authStateKey } = require('../constants')
 const querystring = require('querystring')
-const { httpClient } = require('../clients/http')
+const { spotifyAuthClient } = require('../clients/spotify/auth')
 
 const callbackController = async (req, res) => {
   // your application requests refresh and access tokens
@@ -19,30 +19,17 @@ const callbackController = async (req, res) => {
       }))
   } else {
     res.clearCookie(authStateKey)
-    const options = {
-      url: config.spotify.urls.auth + '/api/token',
-      form: {
-        code: code,
-        redirect_uri: config.spotify.getRedirectUri(),
-        grant_type: 'authorization_code'
-      },
-      headers: {
-        'Authorization': config.spotify.getAuthorization(),
-      },
-      json: true
-    }
-
     try {
-      const { access_token, refresh_token } = await httpClient.post(options, 'Failed to authorize API access')
+      const { access_token, refresh_token } = await spotifyAuthClient().authorize(code)
 
-      var options2 = {
+      var options = {
         url: 'https://api.spotify.com/v1/me',
         headers: { 'Authorization': 'Bearer ' + access_token },
         json: true
       }
 
       // use the access token to access the Spotify Web API
-      request.get(options2, function(error, response, body) {
+      request.get(options, function(error, response, body) {
         console.log(body)
       })
 
