@@ -1,5 +1,5 @@
 const express = require('express') // Express web server framework
-const runQuery = require('./query')
+const { httpClient } = require('./clients/http')
 const { filterByDuplicates } = require('./duplicates')
 
 const router = express.Router()
@@ -11,7 +11,7 @@ const findPlaylists = async (accessToken, limit, offset) => {
     json: true,
   }
 
-  const response = await runQuery(options, "Failed to find playlists")
+  const response = await httpClient.get(options, "Failed to find playlists")
 
   return response.total > (offset + limit)
     ? [...response.items, ...await findPlaylists(accessToken, limit, offset + limit)]
@@ -25,7 +25,7 @@ const findSongs = async (accessToken, href, limit, offset) => {
     json: true,
   }
 
-  const response = await runQuery(options, "Failed to find tracks")
+  const response = await httpClient.get(options, "Failed to find tracks")
 
   return response.total > (offset + limit)
     ? [...response.items, ...await findSongs(accessToken, href, limit, offset + limit)]
@@ -35,7 +35,6 @@ const findSongs = async (accessToken, href, limit, offset) => {
 const songName = (song) => song.track.name + ' (' + song.track.id + ')'
 
 router.get('/playlists', async (req, res) => {
-  console.log('Route is here ok')
   const playlists = await findPlaylists(req.headers.access_token, 50, 0)
     .catch((err) => {
       res.statusCode(err.statusCode)

@@ -1,5 +1,5 @@
 const express = require('express')
-const { auth } = require('./routes/auth')
+const { authRouter } = require('./routers/auth')
 
 const serveStatic = express.static(__dirname + '/landing/')
 
@@ -13,8 +13,7 @@ app.use(serveStatic)
 app.use(cors())
 app.use(cookieParser())
 
-app.use(auth());
+app.use(authRouter);
 app.use(require('./playlist'));
 
 module.exports = { app }
-
