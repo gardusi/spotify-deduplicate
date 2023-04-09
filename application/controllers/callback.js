@@ -22,17 +22,6 @@ const callbackController = async (req, res) => {
     try {
       const { access_token, refresh_token } = await spotifyAuthClient().authorize(code)
 
-      var options = {
-        url: 'https://api.spotify.com/v1/me',
-        headers: { 'Authorization': 'Bearer ' + access_token },
-        json: true
-      }
-
-      // use the access token to access the Spotify Web API
-      request.get(options, function(error, response, body) {
-        console.log(body)
-      })
-
       // we can also pass the token to the browser to make requests from there
       res.redirect('/#' + querystring.stringify({ access_token, refresh_token }))
     } catch (err) {

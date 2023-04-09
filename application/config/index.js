@@ -11,7 +11,7 @@ const config = {
     },
     getRedirectUri: () => `${config.host}:${config.port}${process.env.REDIRECT_ENDPOINT}/`,
     getBasicAuth: () => {
-      return `Basic ${new Buffer(config.spotify.clientId + ':' + process.env.CLIENT_SECRET).toString('base64')}`
+      return `Basic ${Buffer.from(config.spotify.clientId + ':' + process.env.CLIENT_SECRET).toString('base64')}`
     },
   }
 }
