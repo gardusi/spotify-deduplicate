@@ -1,4 +1,4 @@
-const request = require('request') // "Request" library
+const request = require('request')
 
 const httpClient = {
   get: (options, errorMessage) => new Promise((resolve, reject) => {

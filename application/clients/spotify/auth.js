@@ -1,4 +1,4 @@
-const { config } = require('../../config')
+const { config } = require('../../../project/config')
 const { httpClient } = require('../http')
 
 const spotifyAuthClient = (baseUrl = config.spotify.urls.auth) => {

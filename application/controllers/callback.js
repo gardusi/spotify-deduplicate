@@ -1,6 +1,4 @@
-const request = require('request')
-const { config } = require('../config')
-const { authStateKey } = require('../constants')
+const { authStateKey } = require('../../project/constants')
 const querystring = require('querystring')
 const { spotifyAuthClient } = require('../clients/spotify/auth')
 

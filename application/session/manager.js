@@ -1,4 +1,4 @@
-const { accessTokenKey } = require("../constants")
+const { accessTokenKey } = require('../../project/constants')
 
 const createSession = () => {
   const session = {}

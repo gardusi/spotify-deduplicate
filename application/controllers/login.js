@@ -1,7 +1,7 @@
-const { config } = require('../config')
-const { authStateKey } = require('../constants')
+const { config } = require('../../project/config')
+const { authStateKey } = require('../../project/constants')
 const querystring = require('querystring')
-const generateRandomString = require('../random')
+const generateRandomString = require('../../helpers/random')
 
 const loginController = (_, res) => {
   const state = generateRandomString(16)
