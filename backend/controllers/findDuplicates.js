@@ -1,6 +1,6 @@
 const { spotifyApiClient } = require('../clients/spotify/api')
 const { filterByDuplicates } = require('../duplicates')
-const { createPlaylistService } = require('../services/playlist')
+const { createPlaylistService } = require('../../backend/services/playlist')
 
 const songName = (song) => song.track.name + ' (' + song.track.id + ')'
 
