@@ -1,9 +1,7 @@
-#login, #loggedin {
-  display: none;
-}
-.text-overflow {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 500px;
+.button-primary {
+  background-color: dodgerblue;
+  color: white;
+  padding: 5px;
+  border-radius: 50vh;
+  border-width: 0;
 }

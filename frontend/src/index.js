@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { StrictMode } from 'react'
 import * as ReactDOMClient from 'react-dom/client';
 import App from './App'
 import * as serviceWorker from './serviceWorker'
@@ -7,9 +7,9 @@ const container = document.getElementById('root')
 
 const root = ReactDOMClient.createRoot(container)
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <App />
-  </React.StrictMode>
+  </StrictMode>
 )
 
 // If you want your app to work offline and load faster, you can change
