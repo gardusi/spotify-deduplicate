@@ -1,25 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
+  const navigate = useNavigate()
 
-  const doLogin = () => {
-
-  }
-
-  const doSearch = () => {
-
-  }
-
+  useEffect(() => {
+    if (!localStorage.getItem('spotifyToken')) {
+      navigate('/login')
+    }  
+  }, [])
+  
   return (
     <div>
-      <div id="user-profile">
-      </div>
-      <div id="oauth">
-      </div>
-      <button onClick={doLogin} className="button-primary">Log in with Spotify</button>
-      <button onClick={doSearch} className="button-primary">Search Song Duplicates</button>
-      <div id="music-list">
-      </div>
+      Nice!
     </div>
   )
 }

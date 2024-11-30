@@ -4,14 +4,14 @@ const { playlistRouter } = require('./routers/playlist')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const { sessionMiddleware } = require('./session/middleware')
-
-const serveStatic = express.static(__dirname + '/landing/')
+const { config } = require('../project/config')
 
 const app = express()
 
-app.use(serveStatic)
-
-app.use(cors())
+app.use(cors({
+  origin: config.frontendUrl,
+  credentials: true,
+}))
 app.use(cookieParser())
 app.use(sessionMiddleware())
 
