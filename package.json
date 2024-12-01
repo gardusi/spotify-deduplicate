@@ -4,14 +4,22 @@
   "description": "Reads the user's songs and indicates duplicate candidates",
   "version": "0.0.2",
   "scripts": {
-    "start": "node index.js"
+    "start:backend": "node ./backend/index.js",
+    "start:frontend": "yarn --cwd ./frontend start"
   },
   "dependencies": {
-    "cookie-parser": "^1.4.6",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "querystring": "^0.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.10.0",
+    "react-scripts": "^5.0.1",
     "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }

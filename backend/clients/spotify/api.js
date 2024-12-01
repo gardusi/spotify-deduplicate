@@ -4,7 +4,6 @@ const { httpClient } = require('../http')
 const API_VERSION = 'v1'
 
 const spotifyApiClient = (session, baseUrl = config.spotify.urls.api) => {
-
   const buildOptions = (endpoint) => ({
     url: `${baseUrl}/${API_VERSION}/${endpoint}`,
     headers: {

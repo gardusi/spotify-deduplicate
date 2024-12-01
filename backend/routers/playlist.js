@@ -3,6 +3,6 @@ const { findDuplicatesController } = require('../controllers/findDuplicates')
 
 const router = express.Router()
 
-router.get('/playlists', findDuplicatesController)
+router.get('/find-duplicates', findDuplicatesController)
 
 module.exports = { playlistRouter: router }
