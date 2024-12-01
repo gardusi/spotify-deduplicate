@@ -8,35 +8,33 @@ const findDuplicatesController = async (req, res) => {
   const profileClient = spotifyApiClient(req.session)
   const playlistService = createPlaylistService(profileClient)
 
-  const playlists = await playlistService.findAll()
-    .catch((err) => {
-      console.log(err)
-      res.statusCode(err.statusCode)
-      res.send(err.message)
+  try {
+    const result = await playlistService.findAll()
+    const playlists = result.filter((playlist) => playlist && playlist?.name !== "")
+    
+    const promises = playlists.map(async (playlist) => {
+      const tracks = await playlistService.findTracks(playlist.tracks.href)
+      return [playlist.name, (tracks || []).map(songName)]
     })
-
-  const promises = playlists.map((playlist) =>
-    playlistService.findTracks(playlist.tracks.href)
-      .catch((err) => {
-        res.statusCode(err.statusCode)
-        res.send(err.message)
-      })
-      .then((tracks) => [playlist.name, tracks.map(songName)]),
-  )
-
-  const tracks = await Promise.all(promises)
-
-  const songOccurrences = {}
-  tracks.forEach(([playlist, songNames]) => {
-    for (const songName of songNames) {
-      songOccurrences[songName] = [...(songOccurrences[songName] || []), playlist]
-    }
-  })
-
-  res.send({
-    duplicates: filterByDuplicates(songOccurrences),
-    songOccurrences,
-  })
+  
+    const tracks = await Promise.all(promises)
+  
+    const songOccurrences = {}
+    tracks.forEach(([playlist, songNames]) => {
+      for (const songName of songNames) {
+        songOccurrences[songName] = [...(songOccurrences[songName] || []), playlist]
+      }
+    })
+  
+    res.send({
+      duplicates: filterByDuplicates(songOccurrences),
+      songOccurrences,
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(err.statusCode || 500)
+    res.send(err.message)
+  }
 }
 
 module.exports = { findDuplicatesController }

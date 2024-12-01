@@ -8,14 +8,15 @@ const tokenController = async (req, res) => {
 
   if (state === null || state !== storedState) {
     res.send({ error: 'state_mismatch' })
-  } else {
-    res.clearCookie(authStateKey)
-    try {
-      const { access_token, refresh_token } = await spotifyAuthClient().authorize(code)
-      res.send({ access_token, refresh_token })
-    } catch (err) {
-      res.send({ error: 'invalid_token' })
-    }
+    return
+  }
+
+  res.clearCookie(authStateKey)
+  try {
+    const { access_token, refresh_token } = await spotifyAuthClient().authorize(code)
+    res.send({ access_token, refresh_token })
+  } catch (err) {
+    res.send({ error: 'invalid_token' })
   }
 }
 
