@@ -1,6 +1,5 @@
 const { config } = require('../../project/config')
 const { authStateKey } = require('../../project/constants')
-const querystring = require('querystring')
 const generateRandomString = require('../../helpers/random')
 
 const loginController = (_, res) => {
@@ -8,7 +7,7 @@ const loginController = (_, res) => {
 
   res.cookie(authStateKey, state)
   res.redirect(config.spotify.urls.auth + '/authorize?' +
-    querystring.stringify({
+    new URLSearchParams({
       response_type: 'code',
       client_id: config.spotify.clientId,
       scope: config.spotify.permissions.join(' '),

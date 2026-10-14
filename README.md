@@ -3,9 +3,9 @@ Reads the user's songs and finds songs contained whithin different groups, such 
 
 ## How to Use
 
-1. Clone the project and run `yarn` on the root folder
+1. Make sure you have Node.js 22.22+ (24 LTS recommended) installed, then clone the project and run `yarn` on the root folder (it installs both backend and frontend)
 
-2. Get your Spotify credentials at the [Register Your App](https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app) tutorial
+2. Get your Spotify credentials at the [Register Your App](https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app) tutorial, using `http://127.0.0.1:3000/callback/` as the redirect URI
 
 3. Rename .env.example to .env and replace the configurations with your credentials and target playlists (pay attention to spaces!)
 

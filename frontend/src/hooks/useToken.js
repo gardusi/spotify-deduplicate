@@ -7,7 +7,7 @@ const useToken = (params, navigate) => {
     }
 
     const fetchToken = async () => {
-        const response = await fetch(`http://localhost:8888/token?code=${authCode}&state=${state}`, {
+        const response = await fetch(`http://127.0.0.1:8888/token?code=${authCode}&state=${state}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'

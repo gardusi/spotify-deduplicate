@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const Home = () => {
   const handleSearchDuplicates = () => {
     console.log("Searching for duplicates...");
     setIsLoading(true);
-    fetch("http://localhost:8888/find-duplicates", {
+    fetch("http://127.0.0.1:8888/find-duplicates", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
