@@ -3,7 +3,7 @@ import React from 'react'
 const Login = () => {
   return (
     <div>
-      <a className="button-primary" href='http://localhost:8888/login'>Log in with Spotify</a>
+      <a className="button-primary" href='http://127.0.0.1:8888/login'>Log in with Spotify</a>
     </div>
   )
 }

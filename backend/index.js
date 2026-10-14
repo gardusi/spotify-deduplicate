@@ -1,5 +1,5 @@
 const env = require('dotenv')
-env.config()
+env.config({ quiet: true })
 
 const { app } = require('./app')
 console.log('Listening on 8888')

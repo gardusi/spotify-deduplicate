@@ -1,33 +1,28 @@
-const request = require('request')
+const send = async (method, { url, headers = {}, json, form }, errorMessage) => {
+  let response
+  try {
+    response = await fetch(url, {
+      method,
+      headers: {
+        ...(json ? { 'Accept': 'application/json' } : {}),
+        ...headers,
+      },
+      body: form ? new URLSearchParams(form) : undefined,
+    })
+  } catch (error) {
+    throw { statusCode: 502, message: errorMessage }
+  }
+
+  if (response.status !== 200) {
+    throw { statusCode: response.status, message: errorMessage }
+  }
+
+  return json ? response.json() : response.text()
+}
 
 const httpClient = {
-  get: (options, errorMessage) => new Promise((resolve, reject) => {
-    request.get(options, (error, response, body) => {
-      if (error || response.statusCode !== 200) {
-        reject({
-          statusCode: response.statusCode,
-          message: errorMessage,
-        })
-  
-        return
-      }
-      resolve(body)
-    })
-  }),
-
-  post: (options, errorMessage) => new Promise((resolve, reject) => {
-    request.post(options, (error, response, body) => {
-      if (error || response.statusCode !== 200) {
-        reject({
-          statusCode: response.statusCode,
-          message: errorMessage,
-        })
-  
-        return
-      }
-      resolve(body)
-    })
-  })
+  get: (options, errorMessage) => send('GET', options, errorMessage),
+  post: (options, errorMessage) => send('POST', options, errorMessage),
 }
 
 module.exports = { httpClient }

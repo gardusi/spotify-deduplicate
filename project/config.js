@@ -1,5 +1,5 @@
 const config = {
-  frontendUrl: 'http://localhost:3000',
+  frontendUrl: 'http://127.0.0.1:3000',
   port: 8888,
   spotify: {
     clientId: process.env.CLIENT_ID,
