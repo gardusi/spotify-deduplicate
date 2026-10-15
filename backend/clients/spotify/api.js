@@ -24,19 +24,21 @@ const spotifyApiClient = (session, baseUrl = config.spotify.urls.api) => {
     return response
   }
 
-  const findPlaylistTracks = async (playlistUrl, { limit, offset }) => {
-    if (!playlistUrl.startsWith(baseUrl)) {
+  // Since the February 2026 API changes, playlist contents live under `items`
+  // (formerly `tracks`) and are only returned for playlists the user owns or collaborates on
+  const findPlaylistItems = async (itemsUrl, { limit, offset }) => {
+    if (!itemsUrl.startsWith(baseUrl)) {
       throw new Error('Invalid playlist URL')
     }
     const options = {
       ...buildOptions(),
-      url: `${playlistUrl}?limit=${limit}&offset=${offset}`,
+      url: `${itemsUrl}?limit=${limit}&offset=${offset}`,
     }
-    const response = await httpClient.get(options, 'Failed to find playlist tracks')
+    const response = await httpClient.get(options, 'Failed to find playlist items')
     return response
   }
 
-  return { getOwnProfile, findPlaylists, findPlaylistTracks }
+  return { getOwnProfile, findPlaylists, findPlaylistItems }
 }
 
 module.exports = { spotifyApiClient }

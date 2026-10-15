@@ -1,27 +1,28 @@
-const FEELINGS = process.env.FEELINGS
-const GENRES = process.env.GENRES.split(',')
+const CATEGORIES = ['feeling', 'genre']
 
-const filterByDuplicates = (songOccurrences) => {
-  let duplicates = []
+/**
+ * Finds tracks present in two or more playlists of the same category
+ * @param {Array<{ playlist: object, category: string, tracks: object[] }>} classifiedTracks
+ * @return {Array<{ category: string, track: object, playlists: string[] }>}
+ */
+const findDuplicates = (classifiedTracks) => {
+  const occurrences = {}
 
-  Object.entries(songOccurrences).forEach(([name, playlists]) => {
-    const feelingsCount = playlists.reduce((count, name) => count + FEELINGS.includes(name), 0)
-
-    if (feelingsCount >= 2) {
-      console.log(name, playlists)
-      duplicates.push([feelingsCount + ' Feelings: ', name, playlists.join(', ')])
-    }
-
-    const genresCount = playlists.reduce((count, name) => count + GENRES.some((genre) => name.includes(genre)), 0)
-
-    if (genresCount >= 2) {
-      duplicates.push([genresCount + ' Genres: ', name, playlists.join(', ')])
-    }
+  classifiedTracks.forEach(({ playlist, category, tracks }) => {
+    tracks.forEach((track) => {
+      const key = `${category}:${track.id}`
+      occurrences[key] ??= { category, track, playlists: new Set() }
+      occurrences[key].playlists.add(playlist.name)
+    })
   })
 
-  return duplicates
+  return Object.values(occurrences)
+    .filter(({ playlists }) => playlists.size >= 2)
+    .map(({ category, track, playlists }) => ({ category, track, playlists: [...playlists] }))
+    .sort((a, b) => b.playlists.length - a.playlists.length || a.track.name.localeCompare(b.track.name))
 }
 
 module.exports = {
-  filterByDuplicates,
+  CATEGORIES,
+  findDuplicates,
 }

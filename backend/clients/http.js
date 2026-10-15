@@ -1,4 +1,8 @@
-const send = async (method, { url, headers = {}, json, form }, errorMessage) => {
+const MAX_RETRIES = 3
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const send = async (method, { url, headers = {}, json, form }, errorMessage, attempt = 0) => {
   let response
   try {
     response = await fetch(url, {
@@ -11,6 +15,13 @@ const send = async (method, { url, headers = {}, json, form }, errorMessage) => 
     })
   } catch (error) {
     throw { statusCode: 502, message: errorMessage }
+  }
+
+  // Spotify rate limits bursts of requests and tells how long to back off
+  if (response.status === 429 && attempt < MAX_RETRIES) {
+    const retryAfter = Number(response.headers.get('Retry-After')) || 1
+    await wait(retryAfter * 1000)
+    return send(method, { url, headers, json, form }, errorMessage, attempt + 1)
   }
 
   if (response.status !== 200) {

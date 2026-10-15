@@ -4,7 +4,7 @@ const config = {
   spotify: {
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    permissions: ['user-read-private', 'user-read-email'],
+    permissions: ['user-read-private', 'user-read-email', 'playlist-read-private', 'playlist-read-collaborative'],
     urls: {
       auth: 'https://accounts.spotify.com',
       api: 'https://api.spotify.com',

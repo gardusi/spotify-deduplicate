@@ -1,7 +1,189 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --border: #dfe2e7;
+  --text: #1c1f24;
+  --muted: #646b75;
+  --accent: #1db954;
+  --accent-text: #ffffff;
+  --feeling: #7c5cd6;
+  --genre: #d9822b;
+  --compilation: #3b82c4;
+  --error: #c4352b;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121316;
+    --surface: #1c1e22;
+    --border: #2e3137;
+    --text: #e8eaed;
+    --muted: #9aa1ab;
+    --feeling: #a48bf0;
+    --genre: #f0a356;
+    --compilation: #6aaee8;
+    --error: #f07167;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 { font-size: 1.4rem; margin: 0; }
+h2 { font-size: 1.1rem; margin: 0 0 4px; }
+h3 { font-size: 1rem; margin: 16px 0 8px; }
+
+.muted { color: var(--muted); font-size: 0.9rem; }
+.error { color: var(--error); }
+
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.5; }
+
 .button-primary {
-  background-color: dodgerblue;
-  color: white;
-  padding: 5px;
+  display: inline-block;
+  background-color: var(--accent);
+  color: var(--accent-text);
+  padding: 8px 18px;
   border-radius: 50vh;
   border-width: 0;
+  font-weight: 600;
+  text-decoration: none;
 }
+
+.button-link {
+  background: none;
+  border: none;
+  color: var(--muted);
+  text-decoration: underline;
+}
+
+.button-small {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 0.85rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-header p { margin: 0; }
+
+.counts, .chips, .bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.chip {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: 50vh;
+  padding: 1px 10px;
+  font-size: 0.8rem;
+}
+.chip.feeling { border-color: var(--feeling); color: var(--feeling); }
+.chip.genre { border-color: var(--genre); color: var(--genre); }
+.chip.compilation { border-color: var(--compilation); color: var(--compilation); }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.toolbar input[type="search"] {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.toggle { display: flex; gap: 6px; align-items: center; font-size: 0.9rem; }
+
+.bulk { margin-bottom: 8px; }
+
+.playlist-list, .duplicate-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.playlist-list li, .duplicate-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+
+.playlist-info { display: flex; flex-direction: column; min-width: 0; }
+.playlist-name, .track-name { font-weight: 500; overflow-wrap: anywhere; }
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.segmented button {
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  border-left: 1px solid var(--border);
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+.segmented button:first-child { border-left: none; }
+.segmented button.active { color: #fff; }
+.segmented button.active.feeling { background: var(--feeling); }
+.segmented button.active.genre { background: var(--genre); }
+.segmented button.active.compilation { background: var(--compilation); }
+
+details { margin-top: 12px; }
+details ul { padding-left: 18px; }
