@@ -11,6 +11,7 @@
     "node": ">=22.22.0"
   },
   "scripts": {
+    "start": "node ./scripts/start.js",
     "start:backend": "node ./backend/index.js",
     "start:frontend": "yarn --cwd ./frontend start",
     "build:frontend": "yarn --cwd ./frontend build"
