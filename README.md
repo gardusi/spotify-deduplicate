@@ -7,12 +7,15 @@ Reads the user's songs and finds songs contained whithin different groups, such 
 
 2. Get your Spotify credentials at the [Register Your App](https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app) tutorial, using `http://127.0.0.1:3000/callback/` as the redirect URI
 
-3. Rename .env.example to .env and replace the configurations with your credentials and target playlists (pay attention to spaces!)
+3. Rename .env.example to .env and replace the configurations with your credentials
 
-4. Get frontend and backend up by running `yarn start:frontend` and `yarn start:backend`
+4. Get frontend and backend up by running `yarn start` (or separately with `yarn start:frontend` and `yarn start:backend`)
 
-6. Click *login*. Spotify will assist on obtaining an access code and tokens
+5. Click *login*. Spotify will assist on obtaining an access code and tokens
    
-8. Click the *Search Song Duplicates* button whenever you want to run the search for duplicates. Enjoy!
+6. Classify your playlists as *Feeling*, *Genre* or *Compilation*. Use the filter and the bulk buttons to classify many at once. Your choices are remembered in the browser
 
-* Tip: if you have many subgenres, just write the name of the parent genre, the genre match is not exact
+7. Click *Search for duplicates* to list songs found in two or more feelings, or in two or more genres. Compilations and unclassified playlists are never checked. Enjoy!
+
+* Spotify's Web API doesn't expose playlist folders, so the classification has to be done in the app
+* Spotify only returns the songs of playlists you own or collaborate on. Followed playlists are listed but can't be checked

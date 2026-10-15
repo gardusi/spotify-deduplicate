@@ -1,39 +1,38 @@
 const { spotifyApiClient } = require('../clients/spotify/api')
-const { filterByDuplicates } = require('../duplicates')
-const { createPlaylistService } = require('../../backend/services/playlist')
+const { CATEGORIES, findDuplicates } = require('../duplicates')
+const { createPlaylistService } = require('../services/playlist')
 
-const songName = (song) => song.track.name + ' (' + song.track.id + ')'
-
+// Body: { categories: { [playlistId]: 'feeling' | 'genre' | ... } }
+// Categories other than feeling and genre (e.g. compilation) are never checked
 const findDuplicatesController = async (req, res) => {
-  const profileClient = spotifyApiClient(req.session)
-  const playlistService = createPlaylistService(profileClient)
+  const categories = req.body?.categories
+  if (!categories || typeof categories !== 'object' || Array.isArray(categories)) {
+    res.status(400)
+    res.send({ error: 'Expected a "categories" object mapping playlist IDs to categories' })
+    return
+  }
+
+  const playlistService = createPlaylistService(spotifyApiClient(req.session))
 
   try {
-    const result = await playlistService.findAll()
-    const playlists = result.filter((playlist) => playlist && playlist?.name !== "")
-    
-    const promises = playlists.map(async (playlist) => {
-      const tracks = await playlistService.findTracks(playlist.tracks.href)
-      return [playlist.name, (tracks || []).map(songName)]
-    })
-  
-    const tracks = await Promise.all(promises)
-  
-    const songOccurrences = {}
-    tracks.forEach(([playlist, songNames]) => {
-      for (const songName of songNames) {
-        songOccurrences[songName] = [...(songOccurrences[songName] || []), playlist]
-      }
-    })
-  
+    const playlists = await playlistService.findAll()
+    const selected = playlists.filter((playlist) =>
+      playlist.itemsUrl && CATEGORIES.includes(categories[playlist.id]))
+
+    const classifiedTracks = await Promise.all(selected.map(async (playlist) => ({
+      playlist,
+      category: categories[playlist.id],
+      tracks: await playlistService.findTracks(playlist.itemsUrl),
+    })))
+
     res.send({
-      duplicates: filterByDuplicates(songOccurrences),
-      songOccurrences,
+      scannedPlaylists: selected.length,
+      duplicates: findDuplicates(classifiedTracks),
     })
   } catch (err) {
     console.log(err)
     res.status(err.statusCode || 500)
-    res.send(err.message)
+    res.send({ error: err.message })
   }
 }
 
